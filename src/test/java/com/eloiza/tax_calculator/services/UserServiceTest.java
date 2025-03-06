@@ -15,9 +15,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,6 +40,9 @@ public class UserServiceTest {
 
     @Mock
     private JwtTokenProvider jwtTokenProvider;
+
+    @Mock
+    private Authentication authentication;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -102,6 +108,17 @@ public class UserServiceTest {
         AuthResponse response = userService.login(login);
 
         assertEquals("token", response.token());
+    }
+
+    @Test
+    public void login_InvalidAuthentcation() {
+        LoginRequest login = new LoginRequest("test_user", "password");
+
+        when(userRepository.findByUsername("test_user")).thenReturn(Optional.empty());
+
+        UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class, () -> userService.login(login));
+
+        assertEquals("Usuário inválido!", exception.getMessage());
     }
 
 }
