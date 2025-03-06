@@ -1,6 +1,8 @@
 package com.eloiza.tax_calculator.infra;
 
 
+import com.eloiza.tax_calculator.infra.jwt.JwtAuthenticationEntryPoint;
+import com.eloiza.tax_calculator.infra.jwt.JwtAuthenticationFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -22,6 +24,10 @@ import org.springframework.stereotype.Component;
 public class SecurityConfig {
 
 
+    private JwtAuthenticationEntryPoint authenticationEntryPoint;
+
+    private JwtAuthenticationFilter authenticationFilter;
+
     @Bean
     public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -39,6 +45,10 @@ public class SecurityConfig {
                     authorize.anyRequest().authenticated();
                 }).httpBasic(Customizer.withDefaults());
 
+        http.exceptionHandling(exception -> exception
+                .authenticationEntryPoint(authenticationEntryPoint));
+
+        http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
