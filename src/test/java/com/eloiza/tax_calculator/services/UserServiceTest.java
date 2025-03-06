@@ -1,8 +1,11 @@
 package com.eloiza.tax_calculator.services;
 
+import com.eloiza.tax_calculator.controllers.dtos.AuthResponse;
+import com.eloiza.tax_calculator.controllers.dtos.LoginRequest;
 import com.eloiza.tax_calculator.controllers.dtos.UserRequest;
 import com.eloiza.tax_calculator.controllers.dtos.UserResponse;
 import com.eloiza.tax_calculator.exeptions.DuplicateUsernameException;
+import com.eloiza.tax_calculator.infra.jwt.JwtTokenProvider;
 import com.eloiza.tax_calculator.models.Role;
 import com.eloiza.tax_calculator.models.User;
 import com.eloiza.tax_calculator.repositories.RoleRepository;
@@ -12,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Set;
@@ -30,6 +34,9 @@ public class UserServiceTest {
 
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Mock
+    private JwtTokenProvider jwtTokenProvider;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -85,4 +92,16 @@ public class UserServiceTest {
         verify(userRepository, never()).save(any(User.class));
 
     }
+
+    @Test
+    public void login_Success() {
+        LoginRequest login = new LoginRequest("test_user", "password");
+
+        when(jwtTokenProvider.generateAccessToken(any(Authentication.class))).thenReturn("token");
+
+        AuthResponse response = userService.login(login);
+
+        assertEquals("token", response.token());
+    }
+
 }
