@@ -1,4 +1,6 @@
 package com.eloiza.tax_calculator.controllers.dtos;
 
-public record UserRequest(String username, String password, String role) {
+import java.util.Set;
+
+public record UserRequest(String username, String password, Set<String> role) {
 }
