@@ -1,5 +1,6 @@
 package com.eloiza.tax_calculator.controllers;
 
+import com.eloiza.tax_calculator.controllers.dtos.Login;
 import com.eloiza.tax_calculator.controllers.dtos.UserRequest;
 import com.eloiza.tax_calculator.controllers.dtos.UserResponse;
 import org.springframework.http.HttpStatus;
@@ -18,5 +19,11 @@ public class UserController {
     public ResponseEntity<UserResponse> registerUser(@RequestBody UserRequest userRequest) {
         UserResponse userResponse = new UserResponse(1L, userRequest.username(), userRequest.role());
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody Login login){
+        String token = "token";
+        return ResponseEntity.ok().body(token);
     }
 }
