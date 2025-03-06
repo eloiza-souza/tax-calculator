@@ -9,8 +9,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -41,15 +40,15 @@ public class UserControllerTest {
     void whenUserLogin_shouldReturnToken() throws Exception {
         String userLogin = """
                     {
-                        "username": "test_user";
-                        "password": "password";
+                        "username": "test_user",
+                        "password": "password"
                     }
                 """;
         mockMvc.perform(post("/api/tax/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userLogin))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value(any(String.class)));
+                .andExpect(content().string("token"));
     }
 
 }
