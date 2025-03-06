@@ -5,8 +5,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Set;
 
 @Entity
 @Data
@@ -24,5 +27,5 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private String role;
+    private Set<Role> roles;
 }
