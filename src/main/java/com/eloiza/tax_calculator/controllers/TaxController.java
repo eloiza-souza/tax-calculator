@@ -1,7 +1,6 @@
 package com.eloiza.tax_calculator.controllers;
 
 import com.eloiza.tax_calculator.controllers.dtos.TaxResponse;
-import com.eloiza.tax_calculator.models.Tax;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
