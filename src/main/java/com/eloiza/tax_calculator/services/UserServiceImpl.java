@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public AuthResponse login(LoginRequest login) {
         User user = userRepository.findByUsername(login.username()).orElseThrow(() ->
-                new UsernameNotFoundException("Usuário inválido!"));
+                new UsernameNotFoundException("Usuário não encontrado!"));
 
         if (!bCryptPasswordEncoder.matches(login.password(), user.getPassword())) {
             throw new UsernameNotFoundException("Senha inválida!");
