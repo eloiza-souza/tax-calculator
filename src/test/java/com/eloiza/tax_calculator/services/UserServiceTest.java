@@ -1,6 +1,6 @@
 package com.eloiza.tax_calculator.services;
 
-import com.eloiza.tax_calculator.controllers.dtos.AuthResponse;
+import com.eloiza.tax_calculator.controllers.dtos.LoginResponse;
 import com.eloiza.tax_calculator.controllers.dtos.LoginRequest;
 import com.eloiza.tax_calculator.controllers.dtos.UserRequest;
 import com.eloiza.tax_calculator.controllers.dtos.UserResponse;
@@ -117,7 +117,7 @@ public class UserServiceTest {
         when(customUserDetailsService.loadUserByUsername("test_user")).thenReturn(userDetails);
         when(jwtTokenProvider.generateAccessToken(any(Authentication.class))).thenReturn("token");
 
-        AuthResponse response = userService.login(loginRequest);
+        LoginResponse response = userService.login(loginRequest);
 
         assertEquals("token", response.token());
         verify(userRepository).findByUsername("test_user");
@@ -136,7 +136,7 @@ public class UserServiceTest {
             userService.login(loginRequest);
         });
 
-        assertEquals("Usuário não encontrado", exception.getMessage());
+        assertEquals("Usuário não encontrado!", exception.getMessage());
         verify(userRepository).findByUsername("invalid_user");
         verifyNoInteractions(bCryptPasswordEncoder, jwtTokenProvider);
     }
