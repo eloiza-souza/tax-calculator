@@ -1,6 +1,6 @@
 package com.eloiza.tax_calculator.services;
 
-import com.eloiza.tax_calculator.controllers.dtos.AuthResponse;
+import com.eloiza.tax_calculator.controllers.dtos.LoginResponse;
 import com.eloiza.tax_calculator.controllers.dtos.LoginRequest;
 import com.eloiza.tax_calculator.controllers.dtos.UserRequest;
 import com.eloiza.tax_calculator.controllers.dtos.UserResponse;
@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthResponse login(LoginRequest login) {
+    public LoginResponse login(LoginRequest login) {
         User user = userRepository.findByUsername(login.username()).orElseThrow(() ->
                 new UsernameNotFoundException("Usuário não encontrado!"));
 
@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
 
         String token = jwtTokenProvider.generateAccessToken(authentication);
 
-        return new AuthResponse(token);
+        return new LoginResponse(token);
 
     }
 
