@@ -6,6 +6,7 @@ import com.eloiza.tax_calculator.controllers.dtos.UserRequest;
 import com.eloiza.tax_calculator.controllers.dtos.UserResponse;
 import com.eloiza.tax_calculator.exeptions.DuplicateUsernameException;
 import com.eloiza.tax_calculator.infra.jwt.JwtTokenProvider;
+import com.eloiza.tax_calculator.models.CustomUserDetails;
 import com.eloiza.tax_calculator.models.Role;
 import com.eloiza.tax_calculator.models.User;
 import com.eloiza.tax_calculator.repositories.RoleRepository;
@@ -15,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -43,6 +43,9 @@ public class UserServiceTest {
 
     @Mock
     private Authentication authentication;
+
+    @Mock
+    private CustomUserDetailsService customUserDetailsService;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -102,12 +105,25 @@ public class UserServiceTest {
     @Test
     public void login_Success() {
         LoginRequest login = new LoginRequest("test_user", "password");
+        User user = new User();
+        user.setUsername("test_user");
+        user.setPassword("encodedPassword");
+        user.setRoles(Set.of(new Role("ROLE_USER")));
 
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+
+        when(userRepository.findByUsername("test_user")).thenReturn(Optional.of(user));
+        when(bCryptPasswordEncoder.matches("password", "encodedPassword")).thenReturn(true);
+        when(customUserDetailsService.loadUserByUsername("test_user")).thenReturn(userDetails);
         when(jwtTokenProvider.generateAccessToken(any(Authentication.class))).thenReturn("token");
 
         AuthResponse response = userService.login(login);
 
         assertEquals("token", response.token());
+        verify(userRepository).findByUsername("test_user");
+        verify(bCryptPasswordEncoder).matches("password", "encodedPassword");
+        verify(jwtTokenProvider).generateAccessToken(any(Authentication.class));
+
     }
 
     @Test
