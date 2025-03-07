@@ -1,8 +1,11 @@
 package com.eloiza.tax_calculator.controllers;
 
-import com.eloiza.tax_calculator.controllers.dtos.Login;
+import com.eloiza.tax_calculator.controllers.dtos.LoginRequest;
+import com.eloiza.tax_calculator.controllers.dtos.LoginResponse;
 import com.eloiza.tax_calculator.controllers.dtos.UserRequest;
 import com.eloiza.tax_calculator.controllers.dtos.UserResponse;
+import com.eloiza.tax_calculator.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,16 +17,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/tax/user")
 public class UserController {
 
+    private UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping("/register")
     public ResponseEntity<UserResponse> registerUser(@RequestBody UserRequest userRequest) {
-        UserResponse userResponse = new UserResponse(1L, userRequest.username(), userRequest.role());
+        UserResponse userResponse = userService.createUser(userRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody Login login){
-        String token = "token";
-        return ResponseEntity.ok().body(token);
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest){
+        LoginResponse loginResponse= userService.login(loginRequest);
+        return ResponseEntity.ok().body(loginResponse.token());
     }
+
 }
