@@ -104,7 +104,7 @@ public class UserServiceTest {
 
     @Test
     public void login_Success() {
-        LoginRequest login = new LoginRequest("test_user", "password");
+        LoginRequest loginRequest = new LoginRequest("test_user", "password");
         User user = new User();
         user.setUsername("test_user");
         user.setPassword("encodedPassword");
@@ -117,7 +117,7 @@ public class UserServiceTest {
         when(customUserDetailsService.loadUserByUsername("test_user")).thenReturn(userDetails);
         when(jwtTokenProvider.generateAccessToken(any(Authentication.class))).thenReturn("token");
 
-        AuthResponse response = userService.login(login);
+        AuthResponse response = userService.login(loginRequest);
 
         assertEquals("token", response.token());
         verify(userRepository).findByUsername("test_user");
@@ -127,14 +127,38 @@ public class UserServiceTest {
     }
 
     @Test
-    public void login_InvalidAuthentcation() {
-        LoginRequest login = new LoginRequest("test_user", "password");
+    public void login_InvalidUsername() {
+        LoginRequest loginRequest = new LoginRequest("invalid_user", "password");
 
-        when(userRepository.findByUsername("test_user")).thenReturn(Optional.empty());
+        when(userRepository.findByUsername("invalid_user")).thenReturn(Optional.empty());
 
-        UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class, () -> userService.login(login));
+        UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class, () -> {
+            userService.login(loginRequest);
+        });
 
-        assertEquals("Usuário inválido!", exception.getMessage());
+        assertEquals("Usuário não encontrado", exception.getMessage());
+        verify(userRepository).findByUsername("invalid_user");
+        verifyNoInteractions(bCryptPasswordEncoder, jwtTokenProvider);
+    }
+
+    @Test
+    void login_InvalidPassword() {
+        LoginRequest loginRequest = new LoginRequest("test_user", "wrong_password");
+        User user = new User();
+        user.setUsername("test_user");
+        user.setPassword("encodedPassword");
+
+        when(userRepository.findByUsername("test_user")).thenReturn(Optional.of(user));
+        when(bCryptPasswordEncoder.matches("wrong_password", "encodedPassword")).thenReturn(false);
+
+        UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class, () -> {
+            userService.login(loginRequest);
+        });
+
+        assertEquals("Senha inválida!", exception.getMessage());
+        verify(userRepository).findByUsername("test_user");
+        verify(bCryptPasswordEncoder).matches("wrong_password", "encodedPassword");
+        verifyNoInteractions(jwtTokenProvider);
     }
 
 }
