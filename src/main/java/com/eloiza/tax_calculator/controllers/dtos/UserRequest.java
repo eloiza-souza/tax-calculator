@@ -1,5 +1,6 @@
 package com.eloiza.tax_calculator.controllers.dtos;
 
+import com.eloiza.tax_calculator.validation.ValidEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 
@@ -14,6 +15,7 @@ public record UserRequest(
         String password,
 
         @NotEmpty(message = "O campo de roles não pode ser vazio.")
-        Set<String> role
+        Set<@ValidEnum(enumClass = Roles.class, message = "Valor inválido para o campo role. Valores permitidos: [ROLE_ADMIN, ROLE_USER]")
+        String> role
 ) {
 }
