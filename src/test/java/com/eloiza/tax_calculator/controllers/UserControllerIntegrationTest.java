@@ -92,14 +92,17 @@ public class UserControllerIntegrationTest {
                     {
                         "username": "",
                         "password": "",
-                        "role": "invalid"
+                        "role": ["ROLE_INVALID"]
                     }
                 """;
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/tax/user/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userRequestJson))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.password").value("A senha é obrigatória."))
+                .andExpect(jsonPath("$.username").value("O nome de usuário é obrigatório."))
+                .andExpect(jsonPath("$['role[]']").value("Valor inválido para o campo role. Valores permitidos: [ROLE_ADMIN, ROLE_USER]"));
     }
 
 
