@@ -112,30 +112,40 @@ public class TaxServiceTest {
 
     @Test
     void addTax_success() {
+
         String name = "testTax";
         String description = "description";
         double rate = 0.1;
 
         TaxRequest taxRequest = new TaxRequest(name, description, rate);
+
         Tax tax = new Tax();
         tax.setName(name);
         tax.setDescription(description);
         tax.setRate(rate);
 
-        when(taxRepository.save(any(Tax.class))).thenAnswer(invocation -> {
-            Tax savedTax = invocation.getArgument(0);
-            savedTax.setId(1L);
-            return savedTax;
-        });
+        Tax savedTax = new Tax();
+        savedTax.setId(1L);
+        savedTax.setName(name);
+        savedTax.setDescription(description);
+        savedTax.setRate(rate);
 
-        TaxResponse taxResponse = taxService.addTax(taxRequest);
+        TaxResponse taxResponse = new TaxResponse(1L, name, description, rate);
 
-        assertEquals(1L, taxResponse.id());
-        assertEquals(name, taxResponse.name());
-        assertEquals(description, taxResponse.description());
-        assertEquals(rate, taxResponse.rate());
+        when(taxMapper.toEntity(taxRequest)).thenReturn(tax);
+        when(taxRepository.save(any(Tax.class))).thenReturn(savedTax);
+        when(taxMapper.toResponse(savedTax)).thenReturn(taxResponse);
 
-        verify(taxRepository).save(any(Tax.class));
+        TaxResponse response = taxService.addTax(taxRequest);
+
+        assertEquals(1L, response.id());
+        assertEquals(name, response.name());
+        assertEquals(description, response.description());
+        assertEquals(rate, response.rate());
+
+        verify(taxMapper).toEntity(taxRequest);
+        verify(taxRepository).save(tax);
+        verify(taxMapper).toResponse(savedTax);
     }
 
     @Test
