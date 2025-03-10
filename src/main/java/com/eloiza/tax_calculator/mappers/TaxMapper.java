@@ -1,5 +1,6 @@
 package com.eloiza.tax_calculator.mappers;
 
+import com.eloiza.tax_calculator.controllers.dtos.TaxRequest;
 import com.eloiza.tax_calculator.controllers.dtos.TaxResponse;
 import com.eloiza.tax_calculator.models.Tax;
 
@@ -14,4 +15,12 @@ public class TaxMapper {
         );
     }
 
+    public Tax toEntity(TaxRequest taxRequest){
+        Tax tax= new Tax();
+        tax.setName(taxRequest.name());
+        tax.setDescription(taxRequest.description());
+        tax.setRate(taxRequest.rate());
+
+        return tax;
+    }
 }
