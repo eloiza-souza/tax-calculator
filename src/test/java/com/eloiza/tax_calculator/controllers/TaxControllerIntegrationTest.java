@@ -4,6 +4,7 @@ import com.eloiza.tax_calculator.controllers.dtos.CalculateTaxRequest;
 import com.eloiza.tax_calculator.controllers.dtos.CalculateTaxResponse;
 import com.eloiza.tax_calculator.controllers.dtos.TaxRequest;
 import com.eloiza.tax_calculator.controllers.dtos.TaxResponse;
+import com.eloiza.tax_calculator.exeptions.TaxNotFoundException;
 import com.eloiza.tax_calculator.infra.jwt.JwtTokenProvider;
 import com.eloiza.tax_calculator.repositories.TaxRepository;
 import com.eloiza.tax_calculator.repositories.UserRepository;
@@ -73,9 +74,15 @@ public class TaxControllerIntegrationTest {
 
     @Test
     void getTaxById_withExistingId() throws Exception {
+        Long id = 1L;
+        TaxResponse taxResponse = new TaxResponse(id, "test-tax", "description_tax", 0.10);
+        when(taxService.findById(id)).thenReturn(taxResponse);
+
         mockMvc.perform(get("/api/tax/tipos/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L));
+                .andExpect(jsonPath("$.name").value("test-tax"))
+                .andExpect(jsonPath("$.description").value("description_tax"))
+                .andExpect(jsonPath("$.rate").value(0.10));
     }
 
     @Test
@@ -84,10 +91,10 @@ public class TaxControllerIntegrationTest {
                     {
                         "name": "tax_test",
                         "description": "description_tax",
-                        "rate": 0.1
+                        "rate": 10
                     }
                 """;
-        TaxResponse taxResponse = new TaxResponse(1L, "tax_test", "description_tax", 0.1);
+        TaxResponse taxResponse = new TaxResponse(1L, "tax_test", "description_tax", 10.0);
         when(taxService.addTax(any(TaxRequest.class))).thenReturn(taxResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/tax/tipos")
@@ -97,7 +104,7 @@ public class TaxControllerIntegrationTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("tax_test"))
                 .andExpect(jsonPath("$.description").value("description_tax"))
-                .andExpect((jsonPath("$.rate").value(0.1)));
+                .andExpect((jsonPath("$.rate").value(10)));
 
     }
 
@@ -157,22 +164,22 @@ public class TaxControllerIntegrationTest {
     }
 
     @Test
-    void deleteTaxType_success() throws Exception {
+    void deleteTax_success() throws Exception {
         Long id = 1L;
 
         doNothing().when(taxService).deleteTaxById(id);
 
-        mockMvc.perform(delete("/api/v1/tipos/{id}", id)
+        mockMvc.perform(delete("/api/tax/tipos/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
 
     @Test
-    void deleteTaxType_notFound() throws Exception {
+    void deleteTax_notFound() throws Exception {
         Long id = 1L;
-        doThrow(new IllegalArgumentException("Tax type not found")).when(taxService).deleteTaxById(id);
+        doThrow(new TaxNotFoundException("Imposto não encontrado")).when(taxService).deleteTaxById(id);
 
-        mockMvc.perform(delete("/api/v1/tipos/{id}", id)
+        mockMvc.perform(delete("/api/tax/tipos/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
