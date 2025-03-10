@@ -16,7 +16,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -61,13 +60,13 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toSet());
         user.setRoles(roles);
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
-        Set<String> stringRoles = user.getRoles().stream()
+        Set<String> stringRoles = savedUser.getRoles().stream()
                 .map(Role::getName)
                 .collect(Collectors.toSet());
 
-        return new UserResponse(user.getId(), user.getUsername(), stringRoles);
+        return new UserResponse(savedUser.getId(), savedUser.getUsername(), stringRoles);
     }
 
     @Override
