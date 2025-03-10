@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -38,20 +38,26 @@ public class TaxController {
 
     @GetMapping("/tipos/{id}")
     public ResponseEntity<TaxResponse> getTaxById(@PathVariable Long id) {
-      TaxResponse taxResponse = taxService.findById(id);
+        TaxResponse taxResponse = taxService.findById(id);
         return ResponseEntity.ok(taxResponse);
     }
 
     @PostMapping("/tipos")
-    public ResponseEntity<TaxResponse> addTax(@Valid @RequestBody TaxRequest taxRequest){
+    public ResponseEntity<TaxResponse> addTax(@Valid @RequestBody TaxRequest taxRequest) {
         TaxResponse taxResponse = taxService.addTax(taxRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(taxResponse);
     }
 
     @PostMapping("/calculo")
-    public ResponseEntity<CalculateTaxResponse> calculateTax(@Valid @RequestBody CalculateTaxRequest calculateTaxRequest){
+    public ResponseEntity<CalculateTaxResponse> calculateTax(@Valid @RequestBody CalculateTaxRequest calculateTaxRequest) {
         CalculateTaxResponse calculateTaxResponse = taxService.calculateTax(calculateTaxRequest);
         return ResponseEntity.ok(calculateTaxResponse);
+    }
+
+    @DeleteMapping("/tipos/{id}")
+    public ResponseEntity<Void> deleteTax(@PathVariable Long id) {
+        taxService.deleteTaxById(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
