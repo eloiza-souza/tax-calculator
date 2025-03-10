@@ -98,4 +98,23 @@ public class TaxControllerIntegrationTest {
 
     }
 
+    @Test
+    void addTax_InvalidData() throws Exception {
+        String taxRequestJson = """
+                    {
+                        "name": "",
+                        "description": "",
+                        "rate": null
+                    }
+                """;
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/tax/tipos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(taxRequestJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.name").value("O nome do imposto é obrigatório."))
+                .andExpect(jsonPath("$.description").value("A descrição do imposto é obrigatória."))
+                .andExpect(jsonPath("$.rate").value("A alíquota do imposto é obrigatória"));
+    }
+
 }
