@@ -2,8 +2,6 @@ package com.eloiza.tax_calculator.controllers;
 
 import com.eloiza.tax_calculator.controllers.dtos.TaxRequest;
 import com.eloiza.tax_calculator.controllers.dtos.TaxResponse;
-import com.eloiza.tax_calculator.controllers.dtos.UserRequest;
-import com.eloiza.tax_calculator.controllers.dtos.UserResponse;
 import com.eloiza.tax_calculator.infra.jwt.JwtTokenProvider;
 import com.eloiza.tax_calculator.repositories.TaxRepository;
 import com.eloiza.tax_calculator.repositories.UserRepository;
@@ -20,8 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.Set;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -35,7 +31,7 @@ public class TaxControllerIntegrationTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private TaxService userService;
+    private TaxService taxService;
 
     @TestConfiguration
     static class TestConfig {
@@ -50,7 +46,7 @@ public class TaxControllerIntegrationTest {
         }
 
         @Bean
-        public TaxService  taxService() {
+        public TaxService taxService() {
             return Mockito.mock(TaxService.class);
         }
 
@@ -88,7 +84,8 @@ public class TaxControllerIntegrationTest {
                         "rate": 0.1
                     }
                 """;
-        TaxResponse userResponse = new TaxResponse(1L, "tax_test", "description_tax", 0.1);
+        TaxResponse taxResponse = new TaxResponse(1L, "tax_test", "description_tax", 0.1);
+        when(taxService.addTax(any(TaxRequest.class))).thenReturn(taxResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/tax/tipos")
                         .contentType(MediaType.APPLICATION_JSON)
