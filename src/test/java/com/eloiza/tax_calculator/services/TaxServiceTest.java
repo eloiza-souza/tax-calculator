@@ -15,8 +15,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class TaxServiceTest {
@@ -36,7 +36,7 @@ public class TaxServiceTest {
     }
 
     @Test
-    void findAllTaxes_TaxExist (){
+    void findAllTaxes_TaxExist() {
         Tax tax1 = new Tax();
         tax1.setId(1L);
         tax1.setName("test_tax1");
@@ -51,7 +51,7 @@ public class TaxServiceTest {
 
         TaxResponse taxResponse1 = new TaxResponse(1L, "test_tax1", "description_1", 0.1);
         TaxResponse taxResponse2 = new TaxResponse(2L, "test_tax2", "description_2", 0.15);
-        when(taxRepository.findAll()).thenReturn(List.of(tax1,tax2));
+        when(taxRepository.findAll()).thenReturn(List.of(tax1, tax2));
         when(taxMapper.toResponse(tax1)).thenReturn(taxResponse1);
         when(taxMapper.toResponse(tax2)).thenReturn(taxResponse2);
 
@@ -65,7 +65,7 @@ public class TaxServiceTest {
     }
 
     @Test
-    void findAllTaxes_NoTaxExist () {
+    void findAllTaxes_NoTaxExist() {
         when(taxRepository.findAll()).thenReturn(Collections.emptyList());
 
         List<TaxResponse> result = taxService.findAll();
@@ -77,7 +77,7 @@ public class TaxServiceTest {
     }
 
     @Test
-    void findById_ExistingId(){
+    void findById_ExistingId() {
         Long id = 1L;
         Tax tax1 = new Tax();
         tax1.setId(1L);
@@ -86,7 +86,6 @@ public class TaxServiceTest {
         tax1.setRate(0.1);
         TaxResponse taxResponse1 = new TaxResponse(1L, "test_tax1", "description_1", 0.1);
 
-        when(taxRepository.existsById(id)).thenReturn(true);
         when(taxRepository.findById(id)).thenReturn(Optional.of(tax1));
         when(taxMapper.toResponse(tax1)).thenReturn(taxResponse1);
 
@@ -100,12 +99,11 @@ public class TaxServiceTest {
     @Test
     void findById_NonExistentId() {
         Long id = 4L;
-        when(taxRepository.existsById(id)).thenReturn(false);
+        when(taxRepository.findById(id)).thenThrow(new TaxNotFoundException("Imposto não encontrado"));
 
-        assertThrows(TaxNotFoundException.class, () -> taxService.findById(id));
+        TaxNotFoundException exception = assertThrows(TaxNotFoundException.class, () -> taxService.findById(id));
 
-        verify(taxRepository).existsById(id);
-        verify(taxRepository, never()).findById(id);
+        verify(taxRepository).findById(id);
         verify(taxMapper, never()).toResponse(any(Tax.class));
     }
 }
