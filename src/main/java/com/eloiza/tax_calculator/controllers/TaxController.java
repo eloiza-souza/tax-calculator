@@ -1,5 +1,7 @@
 package com.eloiza.tax_calculator.controllers;
 
+import com.eloiza.tax_calculator.controllers.dtos.CalculateTaxRequest;
+import com.eloiza.tax_calculator.controllers.dtos.CalculateTaxResponse;
 import com.eloiza.tax_calculator.controllers.dtos.TaxRequest;
 import com.eloiza.tax_calculator.controllers.dtos.TaxResponse;
 import com.eloiza.tax_calculator.services.TaxService;
@@ -44,6 +46,12 @@ public class TaxController {
     public ResponseEntity<TaxResponse> addTax(@Valid @RequestBody TaxRequest taxRequest){
         TaxResponse taxResponse = taxService.addTax(taxRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(taxResponse);
+    }
+
+    @PostMapping("/calculo")
+    public ResponseEntity<CalculateTaxResponse> calculateTax(@Valid @RequestBody CalculateTaxRequest calculateTaxRequest){
+        CalculateTaxResponse calculateTaxResponse = taxService.calculateTax(calculateTaxRequest);
+        return ResponseEntity.ok(calculateTaxResponse);
     }
 
 }
