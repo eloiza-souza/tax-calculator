@@ -162,9 +162,40 @@ public class TaxServiceTest {
 
         CalculateTaxResponse calculateTaxResponse = taxService.calculateTax(calculateTaxRequest);
 
-       assertEquals(100*0.1, calculateTaxResponse.taxCalculated());
-       assertEquals("Test_Tax", calculateTaxResponse.taxName());
+        assertEquals(100 * 0.1, calculateTaxResponse.taxCalculated());
+        assertEquals("Test_Tax", calculateTaxResponse.taxName());
 
+    }
+
+    @Test
+    void calculateTax_invalidTax() {
+        Long id = 1L;
+        CalculateTaxRequest calculateTaxRequest = new CalculateTaxRequest(id, 100.0);
+
+        when(taxRepository.findById(id)).thenThrow(new TaxNotFoundException("Imposto não encontrado"));
+
+        TaxNotFoundException exception = assertThrows(TaxNotFoundException.class, () -> taxService.calculateTax(calculateTaxRequest));
+
+        verify(taxRepository).findById(id);
+    }
+
+    @Test
+    void deleteTaxById_success() {
+        Long id = 1L;
+        when(taxRepository.existsById(id)).thenReturn(true);
+
+        taxService.deleteTaxById(id);
+
+        verify(taxRepository).deleteById(id);
+    }
+
+    @Test
+    void deleteTaxById_notFound() {
+        Long id = 1L;
+        when(taxRepository.existsById(id)).thenReturn(false);
+
+        assertThrows(TaxNotFoundException.class, () -> taxService.deleteTaxById(id));
+        verify(taxRepository, never()).deleteById(id);
     }
 
 }
