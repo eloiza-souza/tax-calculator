@@ -59,6 +59,9 @@ public class TaxServiceImpl implements TaxService {
 
     @Override
     public void deleteTaxById(Long id) {
-
+        if (!taxRepository.existsById(id)) {
+            throw new TaxNotFoundException("Imposto não encontrado");
+        }
+        taxRepository.deleteById(id);
     }
 }
