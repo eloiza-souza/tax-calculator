@@ -56,7 +56,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void registerUser_ShouldReturnUserResponse_WhenUserIsValid() {
+    void registerUser_success() {
         String username = "testUser";
         String rawPassword = "password123";
         String encodedPassword = "encodedPassword";
@@ -90,7 +90,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void registerUser_ShouldReturnException_whenExistingUser() {
+    public void registerUser_existingUser() {
         String username = "testUser";
         UserRequest userRequest = new UserRequest(username, "password123", Set.of("ROLE_USER"));
 
