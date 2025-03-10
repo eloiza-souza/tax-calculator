@@ -1,5 +1,6 @@
 package com.eloiza.tax_calculator.services;
 
+import com.eloiza.tax_calculator.controllers.dtos.TaxRequest;
 import com.eloiza.tax_calculator.controllers.dtos.TaxResponse;
 import com.eloiza.tax_calculator.models.Tax;
 
@@ -11,4 +12,5 @@ public interface TaxService {
 
     TaxResponse findById(Long id);
 
+    TaxResponse addTax(TaxRequest taxRequest);
 }
