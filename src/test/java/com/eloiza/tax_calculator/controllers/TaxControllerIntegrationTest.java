@@ -1,5 +1,7 @@
 package com.eloiza.tax_calculator.controllers;
 
+import com.eloiza.tax_calculator.controllers.dtos.CalculateTaxRequest;
+import com.eloiza.tax_calculator.controllers.dtos.CalculateTaxResponse;
 import com.eloiza.tax_calculator.controllers.dtos.TaxRequest;
 import com.eloiza.tax_calculator.controllers.dtos.TaxResponse;
 import com.eloiza.tax_calculator.infra.jwt.JwtTokenProvider;
@@ -118,18 +120,21 @@ public class TaxControllerIntegrationTest {
     }
 
     @Test
-    void calculateTax_Success(){
+    void calculateTax_Success()  throws Exception{
         String calculateTaxRequestJson = """
                     {
                         "taxId": "1",
                         "baseValue": "100.00"
                     }
                 """;
+
+        CalculateTaxResponse calculateTaxResponse = new CalculateTaxResponse("test_tax", 100.00, 0.1, 10.0);
+        when(taxService.calculateTax(any(CalculateTaxRequest.class))).thenReturn(calculateTaxResponse);
+
         mockMvc.perform(MockMvcRequestBuilders.post("/api/tax/calculo")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(calculateTaxRequestJson))
                 .andExpect(status().isOk())
-
                 .andExpect(jsonPath("$.baseValue").value(100));
     }
 }
