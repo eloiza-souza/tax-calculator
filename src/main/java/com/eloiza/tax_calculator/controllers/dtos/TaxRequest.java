@@ -1,11 +1,8 @@
 package com.eloiza.tax_calculator.controllers.dtos;
 
-import com.eloiza.tax_calculator.validation.ValidEnum;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-
-import java.util.Set;
+import jakarta.validation.constraints.Positive;
 
 public record TaxRequest(
         @NotBlank(message = "O nome do imposto é obrigatório.")
@@ -15,6 +12,7 @@ public record TaxRequest(
         String description,
 
         @NotNull(message = "A alíquota do imposto é obrigatória")
-        double rate
+        @Positive(message = "A alíquota do imposto deve ser maior que zero")
+        Double rate
 ) {
 }
