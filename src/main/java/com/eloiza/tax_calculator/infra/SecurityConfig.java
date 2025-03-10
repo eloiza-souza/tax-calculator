@@ -42,6 +42,7 @@ public class SecurityConfig {
                     authorize.requestMatchers(HttpMethod.POST,"/api/tax/user/login").permitAll();
                     authorize.requestMatchers(HttpMethod.GET,"/api/tax/tipos").permitAll();
                     authorize.requestMatchers(HttpMethod.POST,"/api/tax/tipos").hasRole("ADMIN");
+                    authorize.requestMatchers(HttpMethod.POST,"/api/tax/calculo").hasRole("ADMIN");
                     authorize.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
                     authorize.anyRequest().authenticated();
                 }).httpBasic(Customizer.withDefaults());
