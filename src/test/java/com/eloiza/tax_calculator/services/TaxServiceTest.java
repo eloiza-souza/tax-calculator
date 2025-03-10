@@ -1,6 +1,7 @@
 package com.eloiza.tax_calculator.services;
 
 import com.eloiza.tax_calculator.controllers.dtos.TaxResponse;
+import com.eloiza.tax_calculator.mappers.TaxMapper;
 import com.eloiza.tax_calculator.models.Tax;
 import com.eloiza.tax_calculator.repositories.TaxRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +20,9 @@ public class TaxServiceTest {
 
     @Mock
     private TaxRepository taxRepository;
+
+    @Mock
+    private TaxMapper taxMapper;
 
     @InjectMocks
     private TaxServiceImpl taxService;
@@ -45,6 +49,8 @@ public class TaxServiceTest {
         TaxResponse taxResponse1 = new TaxResponse(1L, "test_tax1", "description_1", 0.1);
         TaxResponse taxResponse2 = new TaxResponse(2L, "test_tax2", "description_2", 0.15);
         when(taxRepository.findAll()).thenReturn(List.of(tax1,tax2));
+        when(taxMapper.toResponse(tax1)).thenReturn(taxResponse1);
+        when(taxMapper.toResponse(tax2)).thenReturn(taxResponse2);
 
         List<TaxResponse> response = taxService.findAll();
 
