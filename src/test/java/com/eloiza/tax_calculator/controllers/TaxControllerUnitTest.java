@@ -1,6 +1,8 @@
 package com.eloiza.tax_calculator.controllers;
 
+import com.eloiza.tax_calculator.controllers.dtos.TaxRequest;
 import com.eloiza.tax_calculator.controllers.dtos.TaxResponse;
+import com.eloiza.tax_calculator.controllers.dtos.UserResponse;
 import com.eloiza.tax_calculator.services.TaxService;
 import com.eloiza.tax_calculator.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,6 +50,21 @@ public class TaxControllerUnitTest {
         verify(taxService).findById(id);
 
     }
+
+    @Test
+    void addTax_Success(){
+        TaxRequest taxRequest = new TaxRequest("test_tax", "description", 0.1);
+        TaxResponse taxResponse = new TaxResponse(1L,"test_tax", "description", 0.1);
+
+        when(taxService.addTax(taxRequest)).thenReturn(taxResponse);
+
+        ResponseEntity<TaxResponse> response = taxController.addTax(taxRequest);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(taxResponse, response.getBody());
+        verify(taxService).addTax(taxRequest);
+    }
+
 
 
 
