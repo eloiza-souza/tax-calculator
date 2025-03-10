@@ -17,4 +17,6 @@ public interface TaxService {
     TaxResponse addTax(TaxRequest taxRequest);
 
     CalculateTaxResponse calculateTax(CalculateTaxRequest calculateTaxRequest);
+
+    void deleteTaxById(Long id);
 }

@@ -1,5 +1,7 @@
 package com.eloiza.tax_calculator.services;
 
+import com.eloiza.tax_calculator.controllers.dtos.CalculateTaxRequest;
+import com.eloiza.tax_calculator.controllers.dtos.CalculateTaxResponse;
 import com.eloiza.tax_calculator.controllers.dtos.TaxRequest;
 import com.eloiza.tax_calculator.controllers.dtos.TaxResponse;
 import com.eloiza.tax_calculator.exeptions.TaxNotFoundException;
@@ -44,5 +46,19 @@ public class TaxServiceImpl implements TaxService {
         Tax tax = taxMapper.toEntity(taxRequest);
         Tax savedTax = taxRepository.save(tax);
         return taxMapper.toResponse(savedTax);
+    }
+
+    @Override
+    public CalculateTaxResponse calculateTax(CalculateTaxRequest calculateTaxRequest) {
+        Tax tax = taxRepository.findById(calculateTaxRequest.taxId()).orElseThrow(() -> new TaxNotFoundException("Imposto não encontrado"));
+
+        Double taxValue = tax.getRate() * calculateTaxRequest.baseValue();
+
+        return new CalculateTaxResponse(tax.getName(), calculateTaxRequest.baseValue(), tax.getRate(), taxValue);
+    }
+
+    @Override
+    public void deleteTaxById(Long id) {
+
     }
 }
