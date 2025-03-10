@@ -81,7 +81,7 @@ public class TaxControllerUnitTest {
 
         when(taxService.calculateTax(calculateTaxRequest)).thenReturn(calculateTaxResponse);
 
-        ResponseEntity<CalculateTaxResponse> response = taxController.calculateTax(id);
+        ResponseEntity<CalculateTaxResponse> response = taxController.calculateTax(calculateTaxRequest);
         assertEquals(10.0, calculateTaxResponse.taxCalculated());
 
     }
