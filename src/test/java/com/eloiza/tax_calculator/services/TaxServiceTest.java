@@ -1,9 +1,14 @@
 package com.eloiza.tax_calculator.services;
 
+import com.eloiza.tax_calculator.controllers.dtos.TaxRequest;
 import com.eloiza.tax_calculator.controllers.dtos.TaxResponse;
+import com.eloiza.tax_calculator.controllers.dtos.UserRequest;
+import com.eloiza.tax_calculator.controllers.dtos.UserResponse;
 import com.eloiza.tax_calculator.exeptions.TaxNotFoundException;
 import com.eloiza.tax_calculator.mappers.TaxMapper;
+import com.eloiza.tax_calculator.models.Role;
 import com.eloiza.tax_calculator.models.Tax;
+import com.eloiza.tax_calculator.models.User;
 import com.eloiza.tax_calculator.repositories.TaxRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -106,4 +112,33 @@ public class TaxServiceTest {
         verify(taxRepository).findById(id);
         verify(taxMapper, never()).toResponse(any(Tax.class));
     }
+
+    @Test
+    void addTax_success(){
+        String name = "testTax";
+        String description = "description";
+        double rate = 0.1;
+
+        TaxRequest taxRequest = new TaxRequest(name, description, rate);
+       Tax tax = new Tax();
+       tax.setName(name);
+       tax.setDescription(description);
+       tax.setRate(rate);
+
+        when(taxRepository.save(any(Tax.class))).thenAnswer(invocation -> {
+            Tax savedTax = invocation.getArgument(0);
+            savedTax.setId(1L);
+            return savedTax;
+        });
+
+        TaxResponse taxResponse = taxService.addTax(taxRequest);
+
+        assertEquals(1L, taxResponse.id());
+        assertEquals(name, taxResponse.name());
+        assertEquals(description, taxResponse.description());
+        assertEquals(rate, taxResponse.rate());
+
+        verify(taxRepository).save(any(Tax.class));
+    }
+
 }
