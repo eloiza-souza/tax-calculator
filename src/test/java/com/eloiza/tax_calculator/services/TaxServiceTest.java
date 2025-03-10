@@ -10,11 +10,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class TaxServiceTest {
 
@@ -33,7 +34,7 @@ public class TaxServiceTest {
     }
 
     @Test
-    void findAllTaxes_ExistsTax (){
+    void findAllTaxes_TaxExist (){
         Tax tax1 = new Tax();
         tax1.setId(1L);
         tax1.setName("test_tax1");
@@ -61,5 +62,17 @@ public class TaxServiceTest {
         verify(taxRepository).findAll();
     }
 
+    @Test
+    void findAllTaxes_NoTaxExist () {
+        when(taxRepository.findAll()).thenReturn(Collections.emptyList());
+
+        List<TaxResponse> result = taxService.findAll();
+
+        assertTrue(result.isEmpty());
+
+        verify(taxRepository).findAll();
+        verify(taxMapper, never()).toResponse(any(Tax.class));
+
+    }
 
 }
