@@ -1,7 +1,10 @@
 package com.eloiza.tax_calculator.controllers;
 
+import com.eloiza.tax_calculator.controllers.dtos.CalculateTaxRequest;
+import com.eloiza.tax_calculator.controllers.dtos.CalculateTaxResponse;
 import com.eloiza.tax_calculator.controllers.dtos.TaxRequest;
 import com.eloiza.tax_calculator.controllers.dtos.TaxResponse;
+import com.eloiza.tax_calculator.models.Tax;
 import com.eloiza.tax_calculator.services.TaxService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +16,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 public class TaxControllerUnitTest {
 
@@ -63,6 +67,25 @@ public class TaxControllerUnitTest {
         assertEquals(taxResponse, response.getBody());
         verify(taxService).addTax(taxRequest);
     }
+
+    @Test
+    void calculateTax(){
+        Long taxId = 1L;
+        Double baseValue = 100.0;
+        Tax tax = new Tax();
+        tax.setName("test_tax");
+        tax.setRate(0.10);
+
+        CalculateTaxRequest calculateTaxRequest = new CalculateTaxRequest(taxId, baseValue);
+        CalculateTaxResponse calculateTaxResponse = new CalculateTaxResponse(tax.getName(), baseValue, tax.getRate(), baseValue * tax.getRate());
+
+        when(taxService.calculateTax(calculateTaxRequest)).thenReturn(calculateTaxResponse);
+
+        ResponseEntity<CalculateTaxResponse> response = taxController.calculateTax(id);
+        assertEquals(10.0, calculateTaxResponse.taxCalculated());
+
+    }
+
 
 
 }
