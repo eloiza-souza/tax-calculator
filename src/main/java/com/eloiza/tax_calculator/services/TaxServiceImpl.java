@@ -34,6 +34,7 @@ public class TaxServiceImpl implements TaxService {
 
     @Override
     public TaxResponse findById(Long id) {
-        return null;
+        Tax tax =  taxRepository.findById(id).orElseThrow(() -> new TaxNotFoundException("Imposto não encontrado"));
+        return taxMapper.toResponse(tax);
     }
 }
