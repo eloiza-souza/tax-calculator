@@ -117,4 +117,19 @@ public class TaxControllerIntegrationTest {
                 .andExpect(jsonPath("$.rate").value("A alíquota do imposto é obrigatória"));
     }
 
+    @Test
+    void calculateTax_Success(){
+        String calculateTaxRequestJson = """
+                    {
+                        "taxId": "1",
+                        "baseValue": "100.00"
+                    }
+                """;
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/tax/calculo")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(calculateTaxRequestJson))
+                .andExpect(status().isOk())
+
+                .andExpect(jsonPath("$.baseValue").value(100));
+    }
 }
