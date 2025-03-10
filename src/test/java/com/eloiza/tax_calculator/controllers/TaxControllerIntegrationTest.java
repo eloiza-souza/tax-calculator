@@ -21,7 +21,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -153,5 +154,26 @@ public class TaxControllerIntegrationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.taxId").value("O id do imposto é obrigatório"))
                 .andExpect(jsonPath("$.baseValue").value("O valor base deve ser maior que zero"));
+    }
+
+    @Test
+    void deleteTaxType_success() throws Exception {
+        Long id = 1L;
+
+        doNothing().when(taxService).deleteTaxById(id);
+
+        mockMvc.perform(delete("/api/v1/tipos/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deleteTaxType_notFound() throws Exception {
+        Long id = 1L;
+        doThrow(new IllegalArgumentException("Tax type not found")).when(taxService).deleteTaxById(id);
+
+        mockMvc.perform(delete("/api/v1/tipos/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }
