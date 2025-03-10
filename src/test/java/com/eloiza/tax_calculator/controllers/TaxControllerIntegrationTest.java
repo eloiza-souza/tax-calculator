@@ -137,4 +137,21 @@ public class TaxControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.baseValue").value(100));
     }
+
+    @Test
+    void calculateTax_InvalidData() throws Exception {
+        String calculateTaxRequestJson = """
+                    {
+                        "taxId": null,
+                        "baseValue": "-1"
+                    }
+                """;
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/tax/calculo")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(calculateTaxRequestJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.taxId").value("O id do imposto é obrigatório"))
+                .andExpect(jsonPath("$.baseValue").value("O valor base deve ser maior que zero"));
+    }
 }
