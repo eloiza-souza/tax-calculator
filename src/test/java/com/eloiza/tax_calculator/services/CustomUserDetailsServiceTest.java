@@ -4,9 +4,9 @@ import com.eloiza.tax_calculator.models.CustomUserDetails;
 import com.eloiza.tax_calculator.models.Role;
 import com.eloiza.tax_calculator.models.User;
 import com.eloiza.tax_calculator.repositories.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -16,13 +16,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CustomUserDetailsServiceTest {
@@ -67,14 +67,15 @@ class CustomUserDetailsServiceTest {
 
     @Test
     void loadUserByUsername_UserNotFound() {
-        when(userRepository.findByUsername("nonExistentUser")).thenReturn(Optional.empty());
+        String nonExistentUsername = "nonExistentUser";
+        when(userRepository.findByUsername(nonExistentUsername)).thenReturn(Optional.empty());
 
         UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class, () -> {
-            customUserDetailsService.loadUserByUsername("Usuário não encontrado!");
+            customUserDetailsService.loadUserByUsername(nonExistentUsername);
         });
 
         assertEquals("Usuário não encontrado!", exception.getMessage());
-        verify(userRepository).findByUsername("nonExistentUser");
+        verify(userRepository).findByUsername(nonExistentUsername);
     }
 
     @Test
