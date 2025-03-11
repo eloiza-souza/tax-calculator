@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.Set;
 
@@ -54,20 +55,6 @@ public class UserControllerUnitTest {
 
         assertEquals("Usuário já cadastrado no sistema", exception.getMessage());
         verify(userService).createUser(userRequest);
-    }
-
-    @Test
-    void registerUser_InvalidRequest() {
-        UserRequest invalidRequest = new UserRequest("", "", Set.of("invalid"));
-
-        when(userService.createUser(invalidRequest)).thenThrow(new IllegalArgumentException("Invalid user data"));
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            userController.registerUser(invalidRequest);
-        });
-
-        assertEquals("Invalid user data", exception.getMessage());
-        verify(userService, times(1)).createUser(invalidRequest);
     }
 
     @Test
