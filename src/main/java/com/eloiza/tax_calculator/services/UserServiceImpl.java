@@ -6,6 +6,7 @@ import com.eloiza.tax_calculator.controllers.dtos.UserRequest;
 import com.eloiza.tax_calculator.controllers.dtos.UserResponse;
 import com.eloiza.tax_calculator.exceptions.DuplicateUsernameException;
 import com.eloiza.tax_calculator.infra.jwt.JwtTokenProvider;
+import com.eloiza.tax_calculator.mappers.UserMapper;
 import com.eloiza.tax_calculator.models.CustomUserDetails;
 import com.eloiza.tax_calculator.models.Role;
 import com.eloiza.tax_calculator.models.User;
@@ -31,66 +32,45 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder bCryptPasswordEncoder;
 
-    private final CustomUserDetailsService customUserDetailsService;
+    private final UserMapper userMapper;
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationService authenticationService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder bCryptPasswordEncoder, CustomUserDetailsService customUserDetailsService, JwtTokenProvider jwtTokenProvider) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder bCryptPasswordEncoder, UserMapper userMapper, AuthenticationService authenticationService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.customUserDetailsService = customUserDetailsService;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.userMapper = userMapper;
+        this.authenticationService = authenticationService;
     }
 
     @Override
     public UserResponse createUser(UserRequest userRequest) {
-        String username = userRequest.username();
-        if (userRepository.existsByUsername(username)) {
-            throw new DuplicateUsernameException("Usuário já cadastrado no sistema");
-        }
-
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(bCryptPasswordEncoder.encode(userRequest.password()));
-        Set<Role> roles = userRequest.role().stream()
-                .map(roleName -> roleRepository.findByName(roleName)
-                        .orElseGet(() -> roleRepository.save(new Role(roleName))))
-                .collect(Collectors.toSet());
-        user.setRoles(roles);
-
+        validateDuplicateUsername(userRequest.username());
+        Set<Role> roles = getRolesFromRequest(userRequest.role());
+        String encodedPassword = bCryptPasswordEncoder.encode(userRequest.password());
+        User user = userMapper.toEntity(userRequest, encodedPassword, roles);
         User savedUser = userRepository.save(user);
-
-        Set<String> stringRoles = savedUser.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet());
-
-        return new UserResponse(savedUser.getId(), savedUser.getUsername(), stringRoles);
+        return userMapper.toResponse(savedUser);
     }
 
     @Override
     public LoginResponse login(LoginRequest login) {
-        User user = userRepository.findByUsername(login.username()).orElseThrow(() ->
-                new UsernameNotFoundException("Usuário não encontrado!"));
+        return authenticationService.authenticate(login);
+    }
 
-        if (!bCryptPasswordEncoder.matches(login.password(), user.getPassword())) {
-            throw new UsernameNotFoundException("Senha inválida!");
+    private void validateDuplicateUsername(String username){
+        if (userRepository.existsByUsername(username)) {
+            throw new DuplicateUsernameException("Usuário já cadastrado no sistema");
         }
+    }
 
-        CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(login.username());
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                userDetails,
-                null,
-                userDetails.getAuthorities()
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String token = jwtTokenProvider.generateAccessToken(authentication);
-
-        return new LoginResponse(token);
-
+    private Set<Role> getRolesFromRequest(Set<String> roleNames) {
+        return roleNames.stream()
+                .map(roleName -> roleRepository.findByName(roleName)
+                        .orElseGet(() -> roleRepository.save(new Role(roleName))))
+                .collect(Collectors.toSet());
     }
 
 }

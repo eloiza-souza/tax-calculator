@@ -1,11 +1,12 @@
 package com.eloiza.tax_calculator.services;
 
-import com.eloiza.tax_calculator.controllers.dtos.LoginResponse;
 import com.eloiza.tax_calculator.controllers.dtos.LoginRequest;
+import com.eloiza.tax_calculator.controllers.dtos.LoginResponse;
 import com.eloiza.tax_calculator.controllers.dtos.UserRequest;
 import com.eloiza.tax_calculator.controllers.dtos.UserResponse;
 import com.eloiza.tax_calculator.exceptions.DuplicateUsernameException;
 import com.eloiza.tax_calculator.infra.jwt.JwtTokenProvider;
+import com.eloiza.tax_calculator.mappers.UserMapper;
 import com.eloiza.tax_calculator.models.CustomUserDetails;
 import com.eloiza.tax_calculator.models.Role;
 import com.eloiza.tax_calculator.models.User;
@@ -47,6 +48,9 @@ public class UserServiceTest {
     @Mock
     private CustomUserDetailsService customUserDetailsService;
 
+    @Mock
+    private UserMapper userMapper;
+
     @InjectMocks
     private UserServiceImpl userService;
 
@@ -64,24 +68,32 @@ public class UserServiceTest {
 
         UserRequest userRequest = new UserRequest(username, rawPassword, Set.of(roleName));
         Role role = new Role(roleName);
+
         User user = new User();
         user.setUsername(username);
         user.setPassword(encodedPassword);
         user.setRoles(Set.of(role));
 
+        User savedUser = new User();
+        savedUser.setId(1L);
+        savedUser.setUsername(username);
+        savedUser.setPassword(encodedPassword);
+        savedUser.setRoles(Set.of(role));
+
+
+        UserResponse userResponse = new UserResponse(1L, username, userRequest.role());
+
         when(bCryptPasswordEncoder.encode(rawPassword)).thenReturn(encodedPassword);
         when(roleRepository.findByName(roleName)).thenReturn(java.util.Optional.of(role));
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
-            User savedUser = invocation.getArgument(0);
-            savedUser.setId(1L);
-            return savedUser;
-        });
+        when(userMapper.toEntity(userRequest, encodedPassword, user.getRoles())).thenReturn(user);
+        when(userRepository.save(any(User.class))).thenReturn(savedUser);
+        when(userMapper.toResponse(savedUser)).thenReturn(userResponse);
 
-        UserResponse userResponse = userService.createUser(userRequest);
+        UserResponse response = userService.createUser(userRequest);
 
-        assertEquals(1L, userResponse.id());
-        assertEquals(username, userResponse.username());
-        assertTrue(userResponse.role().contains(roleName));
+        assertEquals(1L, response.id());
+        assertEquals(username, response.username());
+        assertTrue(response.role().contains(roleName));
 
         verify(userRepository).existsByUsername(username);
         verify(bCryptPasswordEncoder).encode(rawPassword);
