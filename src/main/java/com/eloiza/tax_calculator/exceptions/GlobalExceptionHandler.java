@@ -17,19 +17,18 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-
     @ExceptionHandler(DuplicateUsernameException.class)
-    public ResponseEntity<String> duplicateUsernameException(DuplicateUsernameException ex) {
+    public ResponseEntity<String> handleDuplicateUsernameException(DuplicateUsernameException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
     @ExceptionHandler(TaxNotFoundException.class)
-    public ResponseEntity<String> taxNotFoundException(TaxNotFoundException ex) {
+    public ResponseEntity<String> handleTaxNotFoundException(TaxNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<String> usernameNotFoundException(UsernameNotFoundException ex) {
+    public ResponseEntity<String> handleUsernameNotFoundException(UsernameNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
