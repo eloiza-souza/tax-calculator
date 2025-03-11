@@ -4,7 +4,7 @@ import com.eloiza.tax_calculator.controllers.dtos.LoginRequest;
 import com.eloiza.tax_calculator.controllers.dtos.LoginResponse;
 import com.eloiza.tax_calculator.controllers.dtos.UserRequest;
 import com.eloiza.tax_calculator.controllers.dtos.UserResponse;
-import com.eloiza.tax_calculator.exeptions.DuplicateUsernameException;
+import com.eloiza.tax_calculator.exceptions.DuplicateUsernameException;
 import com.eloiza.tax_calculator.infra.jwt.JwtTokenProvider;
 import com.eloiza.tax_calculator.models.CustomUserDetails;
 import com.eloiza.tax_calculator.models.Role;

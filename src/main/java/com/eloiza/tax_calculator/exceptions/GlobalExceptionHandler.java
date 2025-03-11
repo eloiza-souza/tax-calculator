@@ -1,4 +1,4 @@
-package com.eloiza.tax_calculator.exeptions;
+package com.eloiza.tax_calculator.exceptions;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;

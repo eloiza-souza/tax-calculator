@@ -4,7 +4,7 @@ import com.eloiza.tax_calculator.controllers.dtos.LoginRequest;
 import com.eloiza.tax_calculator.controllers.dtos.LoginResponse;
 import com.eloiza.tax_calculator.controllers.dtos.UserRequest;
 import com.eloiza.tax_calculator.controllers.dtos.UserResponse;
-import com.eloiza.tax_calculator.exeptions.DuplicateUsernameException;
+import com.eloiza.tax_calculator.exceptions.DuplicateUsernameException;
 import com.eloiza.tax_calculator.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

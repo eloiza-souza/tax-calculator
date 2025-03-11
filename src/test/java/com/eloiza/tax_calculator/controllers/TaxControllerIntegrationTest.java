@@ -4,7 +4,7 @@ import com.eloiza.tax_calculator.controllers.dtos.CalculateTaxRequest;
 import com.eloiza.tax_calculator.controllers.dtos.CalculateTaxResponse;
 import com.eloiza.tax_calculator.controllers.dtos.TaxRequest;
 import com.eloiza.tax_calculator.controllers.dtos.TaxResponse;
-import com.eloiza.tax_calculator.exeptions.TaxNotFoundException;
+import com.eloiza.tax_calculator.exceptions.TaxNotFoundException;
 import com.eloiza.tax_calculator.infra.jwt.JwtTokenProvider;
 import com.eloiza.tax_calculator.repositories.TaxRepository;
 import com.eloiza.tax_calculator.repositories.UserRepository;

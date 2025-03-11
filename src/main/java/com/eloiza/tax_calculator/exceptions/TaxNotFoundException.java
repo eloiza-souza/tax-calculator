@@ -1,4 +1,4 @@
-package com.eloiza.tax_calculator.exeptions;
+package com.eloiza.tax_calculator.exceptions;
 
 public class TaxNotFoundException extends RuntimeException{
     public TaxNotFoundException(String message) {
