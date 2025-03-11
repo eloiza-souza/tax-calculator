@@ -116,7 +116,7 @@ public class TaxServiceTest {
 
         String name = "testTax";
         String description = "description";
-        double rate = 0.1;
+        double rate = 10.0;
 
         TaxRequest taxRequest = new TaxRequest(name, description, rate);
 
@@ -157,13 +157,13 @@ public class TaxServiceTest {
         tax.setId(1L);
         tax.setName("Test_Tax");
         tax.setDescription("description_tax");
-        tax.setRate(0.1);
+        tax.setRate(10.0);
 
         when(taxRepository.findById(id)).thenReturn(Optional.of(tax));
 
         CalculateTaxResponse calculateTaxResponse = taxService.calculateTax(calculateTaxRequest);
 
-        assertEquals(100 * 0.1, calculateTaxResponse.taxCalculated());
+        assertEquals(100.0 * 10.0/100.0, calculateTaxResponse.taxCalculated());
         assertEquals("Test_Tax", calculateTaxResponse.taxName());
 
     }

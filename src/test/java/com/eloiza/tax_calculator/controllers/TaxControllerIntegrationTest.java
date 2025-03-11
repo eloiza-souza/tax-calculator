@@ -75,14 +75,14 @@ public class TaxControllerIntegrationTest {
     @Test
     void getTaxById_withExistingId() throws Exception {
         Long id = 1L;
-        TaxResponse taxResponse = new TaxResponse(id, "test-tax", "description_tax", 0.10);
+        TaxResponse taxResponse = new TaxResponse(id, "test-tax", "description_tax", 10.0);
         when(taxService.findById(id)).thenReturn(taxResponse);
 
         mockMvc.perform(get("/api/tax/tipos/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("test-tax"))
                 .andExpect(jsonPath("$.description").value("description_tax"))
-                .andExpect(jsonPath("$.rate").value(0.10));
+                .andExpect(jsonPath("$.rate").value(10.0));
     }
 
     @Test

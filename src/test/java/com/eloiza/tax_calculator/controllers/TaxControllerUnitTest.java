@@ -16,7 +16,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 public class TaxControllerUnitTest {
 
@@ -44,7 +43,7 @@ public class TaxControllerUnitTest {
     @Test
     void getTaxById_Success() {
         Long id = 1L;
-        TaxResponse taxResponse = new TaxResponse(id, "test_tax", "description_tax", 0.1);
+        TaxResponse taxResponse = new TaxResponse(id, "test_tax", "description_tax", 10.0);
         when(taxService.findById(id)).thenReturn(taxResponse);
 
         ResponseEntity<TaxResponse> response = taxController.getTaxById(id);
@@ -56,8 +55,8 @@ public class TaxControllerUnitTest {
 
     @Test
     void addTax_Success() {
-        TaxRequest taxRequest = new TaxRequest("test_tax", "description", 0.1);
-        TaxResponse taxResponse = new TaxResponse(1L, "test_tax", "description", 0.1);
+        TaxRequest taxRequest = new TaxRequest("test_tax", "description", 10.0);
+        TaxResponse taxResponse = new TaxResponse(1L, "test_tax", "description", 10.0);
 
         when(taxService.addTax(taxRequest)).thenReturn(taxResponse);
 
@@ -69,15 +68,15 @@ public class TaxControllerUnitTest {
     }
 
     @Test
-    void calculateTax(){
+    void calculateTax() {
         Long taxId = 1L;
         Double baseValue = 100.0;
         Tax tax = new Tax();
         tax.setName("test_tax");
-        tax.setRate(0.10);
+        tax.setRate(10.0);
 
         CalculateTaxRequest calculateTaxRequest = new CalculateTaxRequest(taxId, baseValue);
-        CalculateTaxResponse calculateTaxResponse = new CalculateTaxResponse(tax.getName(), baseValue, tax.getRate(), baseValue * tax.getRate());
+        CalculateTaxResponse calculateTaxResponse = new CalculateTaxResponse(tax.getName(), baseValue, tax.getRate(), baseValue * tax.getRate() / 100.0);
 
         when(taxService.calculateTax(calculateTaxRequest)).thenReturn(calculateTaxResponse);
 
@@ -85,7 +84,6 @@ public class TaxControllerUnitTest {
         assertEquals(10.0, calculateTaxResponse.taxCalculated());
 
     }
-
 
 
 }
