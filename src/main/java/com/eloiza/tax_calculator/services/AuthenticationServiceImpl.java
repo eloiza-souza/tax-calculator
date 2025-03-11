@@ -34,7 +34,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     public LoginResponse authenticate(LoginRequest loginRequest) {
         User user = userRepository.findByUsername(loginRequest.username())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado!"));
         validatePassword(loginRequest.password(), user.getPassword());
         String token = generateToken(loginRequest.username());
         return new LoginResponse(token);
@@ -42,14 +42,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private void validatePassword(String rawPassword, String encodedPassword) {
         if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
-            throw new UsernameNotFoundException("Invalid password!");
+            throw new UsernameNotFoundException("Senha inválida!");
         }
     }
 
     private String generateToken(String username) {
         CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(username);
         Authentication authentication = new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities());
+                userDetails,
+                null,
+                userDetails.getAuthorities());
+
         return jwtTokenProvider.generateAccessToken(authentication);
     }
 }
