@@ -106,6 +106,7 @@ public class TaxServiceTest {
 
         TaxNotFoundException exception = assertThrows(TaxNotFoundException.class, () -> taxService.findById(id));
 
+        assertEquals("Imposto não encontrado", exception.getMessage());
         verify(taxRepository).findById(id);
         verify(taxMapper, never()).toResponse(any(Tax.class));
     }
@@ -176,6 +177,7 @@ public class TaxServiceTest {
 
         TaxNotFoundException exception = assertThrows(TaxNotFoundException.class, () -> taxService.calculateTax(calculateTaxRequest));
 
+        assertEquals("Imposto não encontrado", exception.getMessage());
         verify(taxRepository).findById(id);
     }
 
@@ -195,6 +197,7 @@ public class TaxServiceTest {
         when(taxRepository.existsById(id)).thenReturn(false);
 
         assertThrows(TaxNotFoundException.class, () -> taxService.deleteTaxById(id));
+
         verify(taxRepository, never()).deleteById(id);
     }
 
