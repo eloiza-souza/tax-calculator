@@ -12,13 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class TaxServiceImpl implements TaxService {
 
     private final TaxRepository taxRepository;
-
     private final TaxMapper taxMapper;
 
     @Autowired
@@ -32,12 +30,12 @@ public class TaxServiceImpl implements TaxService {
         return taxRepository.findAll()
                 .stream()
                 .map(taxMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public TaxResponse findById(Long id) {
-        Tax tax = taxRepository.findById(id).orElseThrow(() -> new TaxNotFoundException("Imposto não encontrado"));
+        Tax tax = findTaxByIdOrThrow(id);
         return taxMapper.toResponse(tax);
     }
 
@@ -50,10 +48,8 @@ public class TaxServiceImpl implements TaxService {
 
     @Override
     public CalculateTaxResponse calculateTax(CalculateTaxRequest calculateTaxRequest) {
-        Tax tax = taxRepository.findById(calculateTaxRequest.taxId()).orElseThrow(() -> new TaxNotFoundException("Imposto não encontrado"));
-
-        Double taxValue = tax.getRate() * calculateTaxRequest.baseValue();
-
+        Tax tax = findTaxByIdOrThrow(calculateTaxRequest.taxId());
+        double taxValue = calculateTaxValue(tax.getRate(), calculateTaxRequest.baseValue());
         return new CalculateTaxResponse(tax.getName(), calculateTaxRequest.baseValue(), tax.getRate(), taxValue);
     }
 
@@ -63,5 +59,14 @@ public class TaxServiceImpl implements TaxService {
             throw new TaxNotFoundException("Imposto não encontrado");
         }
         taxRepository.deleteById(id);
+    }
+
+    private Tax findTaxByIdOrThrow(Long id) {
+        return taxRepository.findById(id)
+                .orElseThrow(() -> new TaxNotFoundException("Imposto não encontrado"));
+    }
+
+    private double calculateTaxValue(double rate, double baseValue) {
+        return baseValue * rate / 100.0;
     }
 }
