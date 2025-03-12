@@ -64,12 +64,12 @@ public class UserControllerUnitTest {
 
         when(userService.login(loginRequest)).thenReturn(loginResponse);
 
-        ResponseEntity<String> response = userController.login(loginRequest);
+        ResponseEntity<LoginResponse> response = userController.login(loginRequest);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("valid-token", response.getBody());
-        verify(userService, times(1)).login(loginRequest);
+        assertEquals("valid-token", response.getBody().token());
+        verify(userService).login(loginRequest);
     }
 
     @Test
