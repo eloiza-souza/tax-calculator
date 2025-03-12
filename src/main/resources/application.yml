@@ -1,0 +1,33 @@
+jwt:
+  secret: 3k9J2+7k5f8h1L9m2Pq7Xy8Z0aBcDeFgHiJkLmNoPqRsTuVwXyZ1234567890==
+  expiration: 3600000 # 1h
+
+spring:
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/tax_calculator}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:admin}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  security:
+    user:
+      name: admin
+      password: 12345
+
+server:
+  port: ${SERVER_PORT:8080}
+
+# Swagger
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
