@@ -4,6 +4,7 @@ import com.eloiza.tax_calculator.controllers.dtos.CalculateTaxRequest;
 import com.eloiza.tax_calculator.controllers.dtos.CalculateTaxResponse;
 import com.eloiza.tax_calculator.controllers.dtos.TaxRequest;
 import com.eloiza.tax_calculator.controllers.dtos.TaxResponse;
+import com.eloiza.tax_calculator.exceptions.DuplicateTaxNameException;
 import com.eloiza.tax_calculator.exceptions.TaxNotFoundException;
 import com.eloiza.tax_calculator.mappers.TaxMapper;
 import com.eloiza.tax_calculator.models.Tax;
@@ -68,5 +69,11 @@ public class TaxServiceImpl implements TaxService {
 
     private double calculateTaxValue(double rate, double baseValue) {
         return baseValue * rate / 100.0;
+    }
+
+    private void validateDuplicateTaxName(String name){
+        if (taxRepository.existsByName(name)) {
+            throw new DuplicateTaxNameException("Imposto já cadastrado no sistema");
+        }
     }
 }
