@@ -109,11 +109,11 @@ public class UserControllerIntegrationTest {
     @Test
     void login_Success() throws Exception {
         String userLogin = """
-                    {
-                        "username": "test_user",
-                        "password": "password"
-                    }
-                """;
+                {
+                    "username": "test_user",
+                    "password": "password"
+                }
+            """;
         LoginResponse loginResponse = new LoginResponse("valid_token");
         when(userService.login(any(LoginRequest.class))).thenReturn(loginResponse);
 
@@ -121,41 +121,43 @@ public class UserControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userLogin))
                 .andExpect(status().isOk())
-                .andExpect(content().string("valid_token"));
+                .andExpect(jsonPath("$.token").value("valid_token"));
     }
 
     @Test
     void login_InvalidUsername() throws Exception {
         String userLogin = """
-                    {
-                        "username": "invalid",
-                        "password": "password"
-                    }
-                """;
+                {
+                    "username": "invalid",
+                    "password": "password"
+                }
+            """;
         when(userService.login(any(LoginRequest.class))).thenThrow(new UsernameNotFoundException("Usuário não encontrado!"));
 
         mockMvc.perform(post("/api/tax/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userLogin))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Usuário não encontrado!"));
+                .andExpect(jsonPath("$.error").value("Not Found"))
+                .andExpect(jsonPath("$.message").value("Usuário não encontrado!"));
     }
 
     @Test
     void login_WrongPassword() throws Exception {
         String userLogin = """
-                    {
-                        "username": "test_user",
-                        "password": "wrong_password"
-                    }
-                """;
+                {
+                    "username": "test_user",
+                    "password": "wrong_password"
+                }
+            """;
         when(userService.login(any(LoginRequest.class))).thenThrow(new UsernameNotFoundException("Senha inválida!"));
 
         mockMvc.perform(post("/api/tax/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userLogin))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Senha inválida!"));
+                .andExpect(jsonPath("$.error").value("Not Found"))
+                .andExpect(jsonPath("$.message").value("Senha inválida!"));
     }
 }
 
