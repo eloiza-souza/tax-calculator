@@ -74,7 +74,10 @@ class JwtAuthenticationFilterTest {
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
-        verify(filterChain).doFilter(request, response);
+        verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        verify(response).setContentType("application/json");
+        verify(response).getWriter().write("{\"error\": \"Token inválido ou expirado. Por favor, forneça um token válido.\"}");
+        verifyNoInteractions(filterChain);
     }
 
     @Test
