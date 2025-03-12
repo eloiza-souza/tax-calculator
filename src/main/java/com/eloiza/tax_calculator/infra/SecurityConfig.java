@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class SecurityConfig {
 
-
     private JwtAuthenticationEntryPoint authenticationEntryPoint;
 
     private JwtAuthenticationFilter authenticationFilter;
@@ -40,10 +39,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> {
                     authorize.requestMatchers(HttpMethod.POST,"api/tax/user/register").permitAll();
                     authorize.requestMatchers(HttpMethod.POST,"/api/tax/user/login").permitAll();
-                    authorize.requestMatchers(HttpMethod.GET,"/api/tax/tipos").permitAll();
+
+                    authorize.requestMatchers(HttpMethod.GET,"/api/tax/tipos").authenticated();
+                    authorize.requestMatchers(HttpMethod.GET,"/api/tax/tipos/{id}").authenticated();
 
                     authorize.requestMatchers(HttpMethod.POST,"/api/tax/tipos").hasRole("ADMIN");
                     authorize.requestMatchers(HttpMethod.POST,"/api/tax/calculo").hasRole("ADMIN");
+                    authorize.requestMatchers(HttpMethod.DELETE,"/api/tax/tipos").hasRole("ADMIN");
 
                     authorize.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
                     authorize.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
