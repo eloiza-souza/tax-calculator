@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,13 +15,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 class JwtAuthenticationFilterTest {
-
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Mock
     private JwtTokenProvider jwtTokenProvider;
@@ -40,10 +41,13 @@ class JwtAuthenticationFilterTest {
     @Mock
     private UserDetails userDetails;
 
+    @InjectMocks
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         MockitoAnnotations.openMocks(this);
-        jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService);
+        SecurityContextHolder.clearContext();
     }
 
     @Test
@@ -71,13 +75,20 @@ class JwtAuthenticationFilterTest {
         when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
         when(jwtTokenProvider.validateToken(token)).thenReturn(false);
 
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter writer = new PrintWriter(stringWriter);
+        when(response.getWriter()).thenReturn(writer);
+
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
 
-        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
         verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         verify(response).setContentType("application/json");
-        verify(response).getWriter().write("{\"error\": \"Token inválido ou expirado. Por favor, forneça um token válido.\"}");
-        verifyNoInteractions(filterChain);
+
+        writer.flush();
+        assertThat(stringWriter.toString()).isEqualTo("{\"error\": \"Token inválido ou expirado. Por favor, forneça um token válido.\"}");
+
+        // Verifica que o filtro não continuou a cadeia de filtros
+        verify(filterChain, never()).doFilter(request, response);
     }
 
     @Test
