@@ -2,7 +2,7 @@ package com.eloiza.tax_calculator.services;
 
 import com.eloiza.tax_calculator.controllers.dtos.LoginRequest;
 import com.eloiza.tax_calculator.controllers.dtos.LoginResponse;
-import com.eloiza.tax_calculator.infra.jwt.JwtTokenProvider;
+import com.eloiza.tax_calculator.auth.jwt.JwtTokenProvider;
 import com.eloiza.tax_calculator.models.CustomUserDetails;
 import com.eloiza.tax_calculator.models.User;
 import com.eloiza.tax_calculator.repositories.UserRepository;

@@ -1,4 +1,4 @@
-package com.eloiza.tax_calculator.infra.jwt;
+package com.eloiza.tax_calculator.auth.jwt;
 
 
 import io.jsonwebtoken.Claims;
@@ -6,7 +6,6 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;

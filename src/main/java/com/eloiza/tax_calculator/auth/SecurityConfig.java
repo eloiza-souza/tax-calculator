@@ -1,8 +1,8 @@
-package com.eloiza.tax_calculator.infra;
+package com.eloiza.tax_calculator.auth;
 
 
-import com.eloiza.tax_calculator.infra.jwt.JwtAuthenticationEntryPoint;
-import com.eloiza.tax_calculator.infra.jwt.JwtAuthenticationFilter;
+import com.eloiza.tax_calculator.auth.jwt.JwtAuthenticationEntryPoint;
+import com.eloiza.tax_calculator.auth.jwt.JwtAuthenticationFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;

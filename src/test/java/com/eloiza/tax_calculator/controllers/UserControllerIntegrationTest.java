@@ -4,7 +4,7 @@ import com.eloiza.tax_calculator.controllers.dtos.LoginRequest;
 import com.eloiza.tax_calculator.controllers.dtos.LoginResponse;
 import com.eloiza.tax_calculator.controllers.dtos.UserRequest;
 import com.eloiza.tax_calculator.controllers.dtos.UserResponse;
-import com.eloiza.tax_calculator.infra.jwt.JwtTokenProvider;
+import com.eloiza.tax_calculator.auth.jwt.JwtTokenProvider;
 import com.eloiza.tax_calculator.repositories.UserRepository;
 import com.eloiza.tax_calculator.services.CustomUserDetailsService;
 import com.eloiza.tax_calculator.services.UserService;

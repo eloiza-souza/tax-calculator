@@ -1,4 +1,4 @@
-package com.eloiza.tax_calculator.infra;
+package com.eloiza.tax_calculator.utils;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
