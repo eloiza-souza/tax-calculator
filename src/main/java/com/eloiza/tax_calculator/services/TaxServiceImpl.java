@@ -44,6 +44,7 @@ public class TaxServiceImpl implements TaxService {
     @Transactional
     @Override
     public TaxResponse addTax(TaxRequest taxRequest) {
+        validateDuplicateTaxName(taxRequest.name());
         Tax tax = taxMapper.toEntity(taxRequest);
         Tax savedTax = taxRepository.save(tax);
         return taxMapper.toResponse(savedTax);
