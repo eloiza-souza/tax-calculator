@@ -41,6 +41,7 @@ public class TaxServiceImpl implements TaxService {
         return taxMapper.toResponse(tax);
     }
 
+    @Transactional
     @Override
     public TaxResponse addTax(TaxRequest taxRequest) {
         Tax tax = taxMapper.toEntity(taxRequest);
