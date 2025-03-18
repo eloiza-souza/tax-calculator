@@ -15,7 +15,7 @@ public record UserRequest(
         String password,
 
         @NotEmpty(message = "O campo de roles não pode ser vazio.")
-        Set<@ValidEnum(enumClass = Roles.class, message = "Valor inválido para o campo role. Valores permitidos: [ROLE_ADMIN, ROLE_USER]")
+        Set<@ValidEnum(enumClass = RoleEnum.class, message = "Valor inválido para o campo role. Valores permitidos: [ROLE_ADMIN, ROLE_USER]")
         String> role
 ) {
 }
