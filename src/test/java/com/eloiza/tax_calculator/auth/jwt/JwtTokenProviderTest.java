@@ -1,4 +1,4 @@
-package com.eloiza.tax_calculator.infra.jwt;
+package com.eloiza.tax_calculator.auth.jwt;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;

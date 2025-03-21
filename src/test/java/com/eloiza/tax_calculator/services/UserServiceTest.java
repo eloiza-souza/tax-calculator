@@ -5,9 +5,8 @@ import com.eloiza.tax_calculator.controllers.dtos.LoginResponse;
 import com.eloiza.tax_calculator.controllers.dtos.UserRequest;
 import com.eloiza.tax_calculator.controllers.dtos.UserResponse;
 import com.eloiza.tax_calculator.exceptions.DuplicateUsernameException;
-import com.eloiza.tax_calculator.infra.jwt.JwtTokenProvider;
+import com.eloiza.tax_calculator.auth.jwt.JwtTokenProvider;
 import com.eloiza.tax_calculator.mappers.UserMapper;
-import com.eloiza.tax_calculator.models.CustomUserDetails;
 import com.eloiza.tax_calculator.models.Role;
 import com.eloiza.tax_calculator.models.User;
 import com.eloiza.tax_calculator.repositories.RoleRepository;
@@ -17,11 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;

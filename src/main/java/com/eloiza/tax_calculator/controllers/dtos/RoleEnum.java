@@ -1,6 +1,6 @@
 package com.eloiza.tax_calculator.controllers.dtos;
 
-public enum Roles {
+public enum RoleEnum {
     ROLE_ADMIN,
     ROLE_USER
 }

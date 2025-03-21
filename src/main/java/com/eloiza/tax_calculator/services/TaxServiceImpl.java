@@ -11,6 +11,7 @@ import com.eloiza.tax_calculator.models.Tax;
 import com.eloiza.tax_calculator.repositories.TaxRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -40,8 +41,10 @@ public class TaxServiceImpl implements TaxService {
         return taxMapper.toResponse(tax);
     }
 
+    @Transactional
     @Override
     public TaxResponse addTax(TaxRequest taxRequest) {
+        validateDuplicateTaxName(taxRequest.name());
         Tax tax = taxMapper.toEntity(taxRequest);
         Tax savedTax = taxRepository.save(tax);
         return taxMapper.toResponse(savedTax);

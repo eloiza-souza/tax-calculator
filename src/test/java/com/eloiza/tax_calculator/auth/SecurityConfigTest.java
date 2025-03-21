@@ -1,7 +1,7 @@
-package com.eloiza.tax_calculator.infra;
+package com.eloiza.tax_calculator.auth;
 
-import com.eloiza.tax_calculator.infra.jwt.JwtAuthenticationEntryPoint;
-import com.eloiza.tax_calculator.infra.jwt.JwtAuthenticationFilter;
+import com.eloiza.tax_calculator.auth.jwt.JwtAuthenticationEntryPoint;
+import com.eloiza.tax_calculator.auth.jwt.JwtAuthenticationFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

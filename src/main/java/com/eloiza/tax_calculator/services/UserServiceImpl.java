@@ -5,20 +5,15 @@ import com.eloiza.tax_calculator.controllers.dtos.LoginResponse;
 import com.eloiza.tax_calculator.controllers.dtos.UserRequest;
 import com.eloiza.tax_calculator.controllers.dtos.UserResponse;
 import com.eloiza.tax_calculator.exceptions.DuplicateUsernameException;
-import com.eloiza.tax_calculator.infra.jwt.JwtTokenProvider;
 import com.eloiza.tax_calculator.mappers.UserMapper;
-import com.eloiza.tax_calculator.models.CustomUserDetails;
 import com.eloiza.tax_calculator.models.Role;
 import com.eloiza.tax_calculator.models.User;
 import com.eloiza.tax_calculator.repositories.RoleRepository;
 import com.eloiza.tax_calculator.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,6 +40,7 @@ public class UserServiceImpl implements UserService {
         this.authenticationService = authenticationService;
     }
 
+    @Transactional
     @Override
     public UserResponse createUser(UserRequest userRequest) {
         validateDuplicateUsername(userRequest.username());

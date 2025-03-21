@@ -1,4 +1,4 @@
-package com.eloiza.tax_calculator.infra.jwt;
+package com.eloiza.tax_calculator.auth.jwt;
 
 import com.eloiza.tax_calculator.services.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
