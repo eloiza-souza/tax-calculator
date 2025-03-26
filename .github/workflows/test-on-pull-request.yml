@@ -58,6 +58,11 @@ jobs:
           done
           echo "Postgres failed to start" && exit 1
 
+      # Criar o banco de dados necessário
+      - name: Create Database
+        run: |
+          PGPASSWORD=admin psql -h localhost -U postgres -c "CREATE DATABASE tax_calculator;"
+
       # Executa os testes com Maven
       - name: Run Maven tests
         run: mvn clean test
