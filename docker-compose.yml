@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: postgres-container
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: tax_calculator
+    networks:
+      - tax-network
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: on-failure
+    ports:
+      - "5432:5432"
+
+  spring-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app-container
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tax_calculator
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin
+    restart: on-failure
+    networks:
+      - tax-network
+    ports:
+      - "8080:8080"
+
+networks:
+  tax-network:
+
+volumes:
+  postgres-data:

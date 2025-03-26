@@ -1,0 +1,68 @@
+name: Run Tests on Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: postgres-db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: admin
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      # Checkout do código do repositório
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Configuração do JDK
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Configuração do cache do Maven para acelerar builds
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      # Esperar o banco de dados estar pronto
+      - name: Wait for Postgres
+        run: |
+          for i in {1..10}; do
+            nc -z localhost 5432 && echo "Postgres is up!" && exit 0
+            echo "Waiting for Postgres..."
+            sleep 5
+          done
+          echo "Postgres failed to start" && exit 1
+
+      # Criar o banco de dados necessário
+      - name: Create Database
+        run: |
+          PGPASSWORD=admin psql -h localhost -U postgres -c "CREATE DATABASE tax_calculator;"
+
+      # Executa os testes com Maven
+      - name: Run Maven tests
+        run: mvn clean test
