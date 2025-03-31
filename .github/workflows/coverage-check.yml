@@ -37,3 +37,14 @@ jobs:
       - name: Run tests and generate coverage report
         run: mvn clean verify
 
+      # Exibir cobertura total no console
+      - name: Display coverage in logs
+        run: |
+          JACOCO_REPORT="target/site/jacoco/jacoco.xml"
+          if [ -f "$JACOCO_REPORT" ]; then
+              COVERAGE=$(grep '<counter type="INSTRUCTION"' "$JACOCO_REPORT" | awk -F'"' '{print $8}')
+              echo "Cobertura total do projeto: $COVERAGE%"
+          else
+              echo "Relatório do JaCoCo não encontrado em $JACOCO_REPORT"
+              exit 1
+          fi
