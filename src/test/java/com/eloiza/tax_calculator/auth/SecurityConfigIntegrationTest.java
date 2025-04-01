@@ -1,80 +1,122 @@
 package com.eloiza.tax_calculator.auth;
 
-import com.eloiza.tax_calculator.auth.jwt.JwtAuthenticationEntryPoint;
-import com.eloiza.tax_calculator.auth.jwt.JwtAuthenticationFilter;
 import com.eloiza.tax_calculator.auth.jwt.JwtTokenProvider;
-import com.eloiza.tax_calculator.services.CustomUserDetailsService;
+import com.eloiza.tax_calculator.controllers.TaxController;
+import com.eloiza.tax_calculator.controllers.UserController;
+import com.eloiza.tax_calculator.controllers.dtos.CalculateTaxRequest;
+import com.eloiza.tax_calculator.controllers.dtos.CalculateTaxResponse;
+import com.eloiza.tax_calculator.controllers.dtos.TaxRequest;
+import com.eloiza.tax_calculator.services.TaxService;
+import com.eloiza.tax_calculator.services.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class SecurityConfigIntegrationTest {
 
-    @Autowired
-    private SecurityConfig securityConfig;
+    private MockMvc mockMvc;
 
-    @Autowired
-    private AuthenticationConfiguration authenticationConfiguration;
+    @Mock
+    private UserService userService;
 
-    @Test
-    void passwordEncoder_shouldReturnValidPasswordEncoder() {
-        // Testa se o PasswordEncoder é configurado corretamente
-        PasswordEncoder passwordEncoder = SecurityConfig.passwordEncoder();
-        assertThat(passwordEncoder).isNotNull();
-        assertThat(passwordEncoder).isInstanceOf(PasswordEncoder.class);
+    @Mock
+    private TaxService taxService;
+
+    @Mock
+    private JwtTokenProvider jwtTokenProvider;
+
+    @InjectMocks
+    private UserController userController;
+
+    @InjectMocks
+    private TaxController taxController;
+
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.standaloneSetup(userController, taxController)
+                .build();
     }
 
     @Test
-    void securityFilterChain_shouldReturnValidSecurityFilterChain() throws Exception {
-        // Testa se o SecurityFilterChain é configurado corretamente
-        SecurityFilterChain securityFilterChain = securityConfig.securityFilterChain(null); // Substitua null por um HttpSecurity válido, se necessário
-        assertThat(securityFilterChain).isNotNull();
+    void whenRegisterUser_thenShouldReturnCreated() throws Exception {
+        when(userService.createUser(any())).thenReturn(null);
+
+        String userRequest = """
+                {
+                    "username": "uniqueuser",
+                    "password": "password123",
+                    "role": ["ROLE_USER"]
+                }
+                """;
+
+        mockMvc.perform(post("/api/tax/user/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(userRequest))
+                .andExpect(status().isCreated());
     }
 
     @Test
-    void authenticationManager_shouldReturnValidAuthenticationManager() throws Exception {
-        // Testa se o AuthenticationManager é configurado corretamente
-        AuthenticationManager authenticationManager = securityConfig.authenticationManager(authenticationConfiguration);
-        assertThat(authenticationManager).isNotNull();
+    void whenLoginUser_thenShouldReturnOk() throws Exception {
+        when(userService.login(any())).thenReturn(null);
+
+        String loginRequest = """
+                {
+                    "username": "uniqueuser",
+                    "password": "password123"
+                }
+                """;
+
+        mockMvc.perform(post("/api/tax/user/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginRequest))
+                .andExpect(status().isOk());
     }
 
-    @Configuration
-    static class TestConfig {
+    @Test
+    void whenAddTax_thenShouldReturnCreated() throws Exception {
+        when(taxService.addTax(any(TaxRequest.class))).thenReturn(null);
 
-        @Bean
-        public JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint() {
-            return new JwtAuthenticationEntryPoint();
-        }
+        String taxRequest = """
+                {
+                    "name": "UniqueTaxType",
+                    "description": "Test Tax",
+                    "rate": 10.0
+                }
+                """;
 
-        @Bean
-        public JwtTokenProvider jwtTokenProvider() {
-            // Retorne uma instância válida de JwtTokenProvider
-            return new JwtTokenProvider("secretKey", 3600000); // Substitua pelos valores reais
-        }
+        mockMvc.perform(post("/api/tax/tipos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(taxRequest))
+                .andExpect(status().isCreated());
+    }
 
-        @Bean
-        public CustomUserDetailsService customUserDetailsService() {
-            // Retorne uma instância válida de CustomUserDetailsService
-            return new CustomUserDetailsService();
-        }
+    @Test
+    void whenCalculateTax_thenShouldReturnOk() throws Exception {
+        when(taxService.calculateTax(any(CalculateTaxRequest.class)))
+                .thenReturn(new CalculateTaxResponse("TaxType", 100.0, 10.0, 10.0));
 
-        @Bean
-        public JwtAuthenticationFilter jwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, CustomUserDetailsService customUserDetailsService) {
-            return new JwtAuthenticationFilter(jwtTokenProvider, customUserDetailsService);
-        }
+        String calculateTaxRequest = """
+                {
+                    "taxId": 1,
+                    "baseValue": 100.0
+                }
+                """;
 
-        @Bean
-        public SecurityConfig securityConfig(JwtAuthenticationEntryPoint authenticationEntryPoint, JwtAuthenticationFilter authenticationFilter) {
-            return new SecurityConfig(authenticationEntryPoint, authenticationFilter);
-        }
+        mockMvc.perform(post("/api/tax/calculo")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(calculateTaxRequest))
+                .andExpect(status().isOk());
     }
 }
