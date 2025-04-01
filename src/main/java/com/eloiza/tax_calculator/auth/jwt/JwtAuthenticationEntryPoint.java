@@ -17,7 +17,10 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("{\"error\": \"Acesso não autorizado. Verifique o token de autenticação.\"}");
-
+        try {
+            response.getWriter().write("{\"error\": \"Acesso não autorizado. Verifique o token de autenticação.\"}");
+        } catch (IOException e) {
+            System.err.println("Erro ao escrever na resposta: " + e.getMessage());
+        }
     }
 }
